@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Palomares Array</title>
+    <style>
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: 1s;
+        }
+
+        body {
+            font-family: monospace;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background-color: #242424;
+            color: white;
+        }
+
+        .array {
+            font-size: 1.5rem;
+            text-align: center;
+            padding: 4rem 0 1rem;
+
+            &::before {
+                content: 'arr = [ ';
+            }
+
+            &::after {
+                content: ' ]';
+            }
+        }
+
+        .returned {
+            padding: 1rem;
+            text-align: center;
+            color: #d2d2d2;
+            font-size: 1rem;
+        }
+
+        .form {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+
+            .blank-input {
+                min-width: 100px;
+                min-height: 3rem;
+                width: fit-content;
+                height: fit-content;
+                padding: 0.5rem;
+                border-bottom: 2px solid #fff;
+                display: flex;
+                justify-content: center;
+
+                &:empty {
+                    border-bottom: 2px solid #545454;
+                }
+            }
+
+            .execute-btn {
+                padding: 0.7rem 1rem;
+                width: 100px;
+                color: white;
+                background-color: #0d6779;
+                border: none;
+                font-size: 1rem;
+                cursor: pointer;
+
+                &:hover {
+                    background-color: #31a6be;
+                }
+            }
+        }
+
+        .methods {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            padding: 1rem 7rem;
+        }
+
+        .method {
+            cursor: pointer;
+            background-color: rgb(69, 69, 69);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.8rem;
+            transform-origin: 50% 50%;
+
+            span {
+                display: inline-block;
+                padding: 0.1rem 0.4rem;
+                outline: none;
+                text-align: center;
+                border-radius: 0.2rem;
+                background-color: rgb(114, 114, 114);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="array"></div>
+    <div class="returned"></div>
+    <div class="form">
+        <div class="blank-input"></div>
+        <button class="execute-btn" onclick="execute()">Execute</button>
+    </div>
+    <div class="methods">
+        <div class="method length">length</div>
+        <div class="method toString">toString()</div>
+        <div class="method at">at(<span contenteditable></span>)</div>
+        <div class="method join">join(`<span contenteditable></span>`)</div>
+        <div class="method pop">pop()</div>
+        <div class="method push">push(`<span contenteditable></span>`)</div>
+        <div class="method shift">shift()</div>
+        <div class="method unshift">unshift(`<span contenteditable></span>`)</div>
+        <div class="method delete">delete arr[<span contenteditable></span>]</div>
+        <div class="method concat">concat(<span contenteditable></span>)</div>
+        <div class="method copyWithin">copyWithin(<span contenteditable></span>, <span contenteditable></span>, <span contenteditable></span>)</div>
+        <div class="method flat">flat()</div>
+        <div class="method flatMap">flatMap(<span contenteditable></span>)</div>
+        <div class="method splice">splice(<span contenteditable></span>, <span contenteditable></span>)</div>
+        <div class="method toSpliced">toSpliced(<span contenteditable></span>, <span contenteditable></span>)</div>
+        <div class="method slice">slice(<span contenteditable></span>, <span contenteditable></span>)</div>
+    </div>
+
+    <script>
+        const methodsContainer = document.querySelector('.methods')
+        const methods = document.querySelectorAll('.method')
+        const inputBox = document.querySelector('.blank-input')
+        const arrayInterface = document.querySelector('.array')
+        const returnedInterface = document.querySelector('.returned')
+
+        const arr = []                      // Array declaration
+
+        function arrLength() {
+            print(arr.length)               // Array.length
+        }
+
+        function toString() {
+            return arr.toString()           // Array.toString()
+        }
+
+        function at(index) {
+            return arr.at(index)            // Array.at()
+        }
+
+        function join(separator) {
+            return arr.join(separator)      // Array.join()
+        }
+
+        function pop() {
+            return arr.pop()                // Array.pop()
+        }
+
+        function push(el) {
+            el = el.startsWith('[') ? 
+                stringToArray(el) : el
+                
+            return arr.push(el)             // Array.push()
+        }
+
+        function shift() {
+            return arr.shift()              // Array.shift()
+        }
+
+        function unshift(el) {
+            return arr.unshift(el)           // Array.unshift()
+        }
+
+        function arrayDelete(index) {
+            print(delete arr[Number(index)])    //  delete Array [index]
+        }
+
+        function concat(arr) {
+            return arr.concat(arr)           // Array.concat()
+        }
+
+        function copyWithin(target, start, end) {
+            return arr.copyWithin(target, start, end)  // Array.copyWithin()
+        }
+
+        function flat() {
+            return arr.flat()               // Array.flat()
+        }
+
+        function flatMap(fn) {
+            return arr.flatMap(fn)          // Array.flatMap()
+        }
+
+        function splice(start, deleteCount, elements) {
+            return arr.splice(start, deleteCount)  // Array.splice()
+        }
+
+        function slice(start, end) {
+            return arr.slice(start, end)      // Array.slice()
+        }
+
+        methods.forEach(async method => {
+            const redo = e => {
+                if(e.target.tagName === 'SPAN') return
+                
+                moveBackElement(method)
+
+                method.removeEventListener('click', redo)
+                method.addEventListener('click', handleClick)
+            }
+
+            const handleClick = async () => {
+                const currentElement = inputBox.childNodes[0]
+
+                if(currentElement) {
+                    methodsContainer.append(currentElement)
+                }
+                
+                await moveElement(method)
+                inputBox.append(method)
+                method.childNodes[1].focus()
+
+                method.removeEventListener('click', handleClick)
+                method.addEventListener('click', redo)
+            }
+
+            method.addEventListener('click', handleClick)
+
+        })
+
+        function moveElement(element) {
+            return new Promise((res) => {
+                const rect = element.getBoundingClientRect()
+                const inp = inputBox.getBoundingClientRect()
+
+                let 
+                    x = rect.x, 
+                    y = rect.y,
+                    dx = inp.x - rect.x,
+                    dy = inp.y - rect.y,
+                    speed = 5,
+                    xSpeed = dx * speed,
+                    ySpeed = dy * speed,
+                    friction = 1
+
+                element.style.position = 'absolute'
+
+                const move = () => {
+                    const el = element.getBoundingClientRect()
+
+                    element.style.left = `${x}px`
+                    element.style.top = `${y}px`
+
+                    x = el.x + xSpeed * friction
+                    y = el.y + ySpeed * friction
+
+                    let aDx = inp.x - el.x
+                    let aDy = inp.y - el.y
+
+                    if((aDx < dx * 0.5 || aDx > dx) && aDy > dy * 0.5) {
+                        friction *= 0.975
+                    }
+
+                    if(el.y > inp.y) requestAnimationFrame(move)
+                    else {
+                        element.style.position = 'static'
+                        res()
+                    }
+                }
+                    
+                move()
+            })
+        }
+
+        function moveBackElement(element) {
+            const spans = element.childNodes
+            
+            spans.forEach(span => {
+                span.innerText = ""
+            })
+
+            methodsContainer.append(element)
+        }
+
+        function stringToArray(str) {
+            return str.replace('[', "").replace(']', "").split(',').map(el => el.trim().replaceAll("\"", "").replaceAll("'", ""))
+        }
+
+        function print(val) {
+            let str = JSON.stringify(arr).replaceAll(',', ', ')
+            arrayInterface.innerText = str.substring(1, str.length-1)
+            returnedInterface.innerText = "Returned Value: " + val
+        }
+
+        function execute() {
+            const method = inputBox.childNodes[0]
+
+            if(!method) return
+            if(method.innerText == 'length') return arrLength()
+            if(method.innerText.startsWith('delete')) return arrayDelete(method.innerText.slice(11, -1))
+
+            print(eval(method.innerText))
+            moveBackElement(method)
+
+        }
+
+        window.addEventListener('keydown', e => {
+            if(e.key == "Enter") execute()
+        })
+
+    </script>
+</body>
+</html>
