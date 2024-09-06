@@ -85,7 +85,7 @@
             justify-content: center;
             flex-wrap: wrap;
             gap: 0.5rem;
-            padding: 1rem 7rem;
+            padding: 1rem min(7rem, 5vw);
         }
 
         .method {
@@ -224,7 +224,7 @@
                 
                 await moveElement(method)
                 inputBox.append(method)
-                method.childNodes[1].focus()
+                method.childNodes[1]?.focus()
 
                 method.removeEventListener('click', handleClick)
                 method.addEventListener('click', redo)
